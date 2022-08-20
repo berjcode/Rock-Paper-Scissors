@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
@@ -11,8 +10,11 @@ public class GameManager : MonoBehaviour
     private ElementController enemy;
 
 
-    public List<ElementController> listElements;
-    public List<ButtonController> listButton;
+    public BattleAreaController battleArea;
+    
+
+     [SerializeField]  private List<ElementController> listElements;
+     [SerializeField] private List<ButtonController> listButton;
 
     private void Awake()
     {
@@ -43,21 +45,16 @@ public class GameManager : MonoBehaviour
     [ContextMenu(nameof(Battle))]
     public void Battle()
     {
-
-        if(player.myType == enemy.myType)
-        {
-            Debug.Log("Draw");
-            return;
-        }
-        var contains = player.weakTypes.Contains(enemy.myType);
+        var currentState = BattleAreaController.ResultState.Draw;
+         var contains = player.weakTypes.Contains(enemy.myType);
+        currentState = contains ? BattleAreaController.ResultState.Lose : BattleAreaController.ResultState.win;
 
 
-        if (contains)
-            Debug.Log($"Win pplayer => {enemy.myType} >{player.myType}");
-        else
-            Debug.Log($"Win Player 1 => {player.myType} > {enemy.myType}");
+        if (player.myType == enemy.myType)
+            currentState = BattleAreaController.ResultState.Draw;
+        
 
-
+        battleArea.Populate(player.mySprite, enemy.mySprite,currentState);
     }
     
 }
